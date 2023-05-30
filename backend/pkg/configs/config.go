@@ -38,23 +38,28 @@ func setDefaults() {
 
 func setEnv() error {
 	path := filepath.Join(".env")
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return err
+	}
 	file, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
 	envs := make(map[string]string)
-	if err == nil {
-		vars := strings.Split(string(file), "\n")
-		for i := range vars {
-			e := strings.Split(vars[i], "=")
-			if len(e) != 2 {
-				return fmt.Errorf(fmt.Sprintf("invalid format %s", path))
-			}
-			envs[strings.ReplaceAll(e[0], " ", "")] = strings.ReplaceAll(e[1], " ", "")
+
+	vars := strings.Split(string(file), "\n")
+	for i := range vars {
+		e := strings.Split(vars[i], "=")
+		if len(e) != 2 {
+			return fmt.Errorf(fmt.Sprintf("invalid format %s", path))
 		}
-		for key, value := range envs {
-			err := os.Setenv(key, value)
-			if err != nil {
-				return err
-			}
+		envs[strings.ReplaceAll(e[0], " ", "")] = strings.ReplaceAll(e[1], " ", "")
+	}
+	for key, value := range envs {
+		err := os.Setenv(key, value)
+		if err != nil {
+			return err
 		}
 	}
-	return err
+	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/expose443/forum/backend/pkg/logger"
@@ -17,23 +18,38 @@ func NewConfig(logger *logger.LogLevel) *Config {
 	if err != nil {
 		logger.Error(fmt.Sprintf("error when setting values from .env %v", err))
 	}
-	return &Config{}
+	return &Config{
+		logger: logger,
+	}
 }
 
-type Config struct{}
+type Config struct {
+	logger *logger.LogLevel
+}
 
 func (cfg *Config) GetString(key string) string {
 	return os.Getenv(key)
+}
+func (cfg *Config) GetInt(key string) int {
+	value := os.Getenv(key)
+	num, err := strconv.Atoi(value)
+	if err != nil {
+		cfg.logger.Error(err.Error())
+		return -1
+	}
+	return num
 }
 
 func setDefaults() {
 	os.Setenv("SERVER_PORT", "8080")
 	os.Setenv("SERVER_ADDRESS", "http://localhost:8080")
-	os.Setenv("SERVER_TIMEOUT", "30")
 	os.Setenv("DB_NAME", "database.db")
 	os.Setenv("DB_PASSWORD", "secret")
 	os.Setenv("DB_PORT", "8191")
 	os.Setenv("DB_HOST", "localhost")
+	os.Setenv("SERVER_READ_TIMEOUT", "10")
+	os.Setenv("SERVER_WRITE_TIMEOUT", "10")
+	os.Setenv("SERVER_IDLE_TIMEOUT", "120")
 }
 
 func setEnv() error {

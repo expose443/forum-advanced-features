@@ -19,7 +19,7 @@ const (
 
 type LogLevel struct {
 	infoLog    *log.Logger
-	errorLog   *log.Logger
+	ErrorLog   *log.Logger
 	warningLog *log.Logger
 	debugLog   *log.Logger
 }
@@ -40,7 +40,7 @@ func New() *LogLevel {
 	multiWriter := io.MultiWriter(os.Stdout, file)
 	return &LogLevel{
 		infoLog:    log.New(multiWriter, fmt.Sprintf("%s[INFO]   \t%s", green, reset), log.Ldate|log.Ltime),
-		errorLog:   log.New(multiWriter, fmt.Sprintf("%s[ERROR]  \t%s", red, reset), log.Ldate|log.Ltime|log.Lshortfile),
+		ErrorLog:   log.New(multiWriter, fmt.Sprintf("%s[ERROR]  \t%s", red, reset), log.Ldate|log.Ltime|log.Lshortfile),
 		warningLog: log.New(multiWriter, fmt.Sprintf("%s[WARNING]\t%s", yellow, reset), log.Ldate|log.Ltime),
 		debugLog:   log.New(multiWriter, fmt.Sprintf("%s[DEBUG]  \t%s", magenta, reset), log.Ldate|log.Ltime),
 	}
@@ -50,7 +50,7 @@ func (l *LogLevel) Info(message string) {
 	l.infoLog.Println(message)
 }
 func (l *LogLevel) Error(message string) {
-	l.errorLog.Println(message)
+	l.ErrorLog.Println(message)
 }
 func (l *LogLevel) Warning(message string) {
 	l.warningLog.Println(message)
